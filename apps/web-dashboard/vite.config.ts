@@ -8,7 +8,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@ancore/ui-kit': path.resolve(__dirname, '../../packages/ui-kit/src'),
     },
   },
   test: {
