@@ -4,10 +4,10 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "lib": ["ES2022", "DOM"],
-    "jsx": "react-jsx",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "composite": false
+    "composite": false,
+    "jsx": "react-jsx"
   },
   "include": ["src/**/*"],
   "exclude": [
@@ -16,6 +16,7 @@
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",
-    "**/*.spec.tsx"
+    "**/*.spec.tsx",
+    "**/__tests__/**"
   ]
 }
