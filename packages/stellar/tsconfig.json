@@ -6,7 +6,12 @@
     "moduleResolution": "node",
     "composite": false,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@ancore/types": ["../types/dist"],
+      "@ancore/types/*": ["../types/dist/*"]
+    }
   },
   "references": [{ "path": "../types" }],
   "include": ["src/**/*"],
