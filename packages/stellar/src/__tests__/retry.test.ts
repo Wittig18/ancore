@@ -323,10 +323,10 @@ describe('retry', () => {
         const delays: number[] = [];
         const fn = jest
           .fn()
-          .mockRejectedValue(new Error('Fail'))
-          .mockRejectedValue(new Error('Fail'))
-          .mockRejectedValue(new Error('Fail'))
-          .mockResolvedValue('success');
+          .mockRejectedValueOnce(new Error('Fail'))
+          .mockRejectedValueOnce(new Error('Fail'))
+          .mockRejectedValueOnce(new Error('Fail'))
+          .mockResolvedValueOnce('success');
 
         // Mock setTimeout to capture delays
         const originalSetTimeout = global.setTimeout;
@@ -417,10 +417,15 @@ describe('retry', () => {
           .mockRejectedValueOnce(new Error('Fail 3'))
           .mockResolvedValueOnce('success');
 
-        const result = await withRetry(fn);
-
-        expect(result).toBe('success');
-        expect(fn).toHaveBeenCalledTimes(4); // Should use default maxRetries: 3
+        jest.useFakeTimers();
+        try {
+          const promise = withRetry(fn);
+          await jest.runAllTimersAsync();
+          await expect(promise).resolves.toBe('success');
+          expect(fn).toHaveBeenCalledTimes(4); // Should use default maxRetries: 3
+        } finally {
+          jest.useRealTimers();
+        }
       });
 
       it('should allow override of default retry parameters', async () => {
@@ -445,18 +450,18 @@ describe('retry', () => {
           maxRetries: 10,
           baseDelayMs: 500,
           exponential: false,
-          isRetryable: (error: Error) => error.message.includes('retryable'),
+          isRetryable: (error: Error) => error.message.startsWith('retryable'),
         };
 
         const retryableError = new Error('retryable error');
-        const nonRetryableError = new Error('non-retryable error');
+        const nonRetryableError = new Error('non retryable error');
 
         const fn = jest
           .fn()
           .mockRejectedValueOnce(retryableError)
           .mockRejectedValueOnce(nonRetryableError);
 
-        await expect(withRetry(fn, customOptions)).rejects.toThrow('non-retryable error');
+        await expect(withRetry(fn, customOptions)).rejects.toThrow('non retryable error');
         expect(fn).toHaveBeenCalledTimes(2); // Should stop at non-retryable error
       });
     });
